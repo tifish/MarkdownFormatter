@@ -4,7 +4,7 @@ namespace MarkdownFormatter;
 
 public abstract class BaseFormatter
 {
-    public abstract void Format(List<string> lines);
+    public abstract void Format(List<string> lines, string filePath);
 
     public virtual void Reset()
     {

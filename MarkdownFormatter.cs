@@ -17,6 +17,7 @@ public static class MarkdownFormatter
             new SurroundCodeBlockWithBlankLines(),
             new SurroundCodeWithOnlyOneBacktick(),
             new AddSpacesBetweenLatinAndCjk(),
+            new UnifyAssetsFolderName(),
         };
     }
 
@@ -24,14 +25,14 @@ public static class MarkdownFormatter
 
     public static void Format(string markdownFile)
     {
-        var lines = File.ReadAllLines(markdownFile).ToList();
-        Format(lines);
-        File.WriteAllLines(markdownFile, lines, new UTF8Encoding(true));
+        FormatFileName(ref markdownFile);
 
-        FormatFileName(markdownFile);
+        var lines = File.ReadAllLines(markdownFile).ToList();
+        Format(lines, markdownFile);
+        File.WriteAllLines(markdownFile, lines, new UTF8Encoding(true));
     }
 
-    private static void FormatFileName(string markdownFile)
+    private static void FormatFileName(ref string markdownFile)
     {
         var fileNameNoExt = Path.GetFileNameWithoutExtension(markdownFile);
         fileNameNoExt = AddSpacesBetweenLatinAndCjk.AddSpaces(fileNameNoExt);
@@ -42,14 +43,15 @@ public static class MarkdownFormatter
         var newMarkdownFile = string.Concat(
             dir == null ? "" : dir + @"\", fileNameNoExt, Path.GetExtension(markdownFile));
         File.Move(markdownFile, newMarkdownFile);
+        markdownFile = newMarkdownFile;
     }
 
-    public static void Format(List<string> lines)
+    public static void Format(List<string> lines, string filePath)
     {
         foreach (var formatter in Formatters)
         {
             formatter.Reset();
-            formatter.Format(lines);
+            formatter.Format(lines, filePath);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace MarkdownFormatter;
 
 public class UnifyListCharacter : BaseFormatter
 {
-    public override void Format(List<string> lines)
+    public override void Format(List<string> lines, string filePath)
     {
         for (var i = 0; i < lines.Count; i++)
         {

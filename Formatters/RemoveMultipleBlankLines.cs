@@ -2,7 +2,7 @@
 
 public class RemoveMultipleBlankLines : BaseFormatter
 {
-    public override void Format(List<string> lines)
+    public override void Format(List<string> lines, string filePath)
     {
         var isPrevLineBlank = false;
         for (var i = 0; i < lines.Count; i++)

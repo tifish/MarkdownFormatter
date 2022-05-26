@@ -2,7 +2,7 @@
 
 public class RemoveBlankLinesBetweenListItems : BaseFormatter
 {
-    public override void Format(List<string> lines)
+    public override void Format(List<string> lines, string filePath)
     {
         var prevListLineNum = -1;
         var deleteLineNums = new List<int>();

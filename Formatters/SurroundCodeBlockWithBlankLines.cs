@@ -2,7 +2,7 @@
 
 public class SurroundCodeBlockWithBlankLines : BaseFormatter
 {
-    public override void Format(List<string> lines)
+    public override void Format(List<string> lines, string filePath)
     {
         var inCodeBlock = false;
 
