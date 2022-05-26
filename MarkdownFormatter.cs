@@ -10,6 +10,7 @@ public static class MarkdownFormatter
         {
             new FirstLineShouldBeNotBlank(),
             new EndWithSingleNewLine(),
+            new RemoveTrailingSpaces(),
             new RemoveMultipleBlankLines(),
             new SurroundHeadingsWithBlankLines(),
             new UnifyListCharacter(),
