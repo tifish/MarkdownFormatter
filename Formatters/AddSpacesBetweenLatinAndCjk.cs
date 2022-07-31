@@ -30,7 +30,7 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
         + @"\p{IsCJKUnifiedIdeographs}"
         + @"\p{IsHangulSyllables}"
         + @"\p{IsCJKCompatibilityForms}"
-        // + @"\p{IsHalfwidthandFullwidthForms}" // 半角和全角字符 
+        // + @"\p{IsHalfwidthandFullwidthForms}" // 半角和全角字符
         + @"]"
     );
 
@@ -42,32 +42,41 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
     private static readonly Regex LatinGroupRegex = new(
         @"[!-~]*[a-zA-Z\d][!-~]*"
     );
+    private static readonly Regex LinkRegex = new(
+        @"\[[^]]*\]\([^)]*\)"
+    );
 
     private static readonly List<int> InsertSpacePositions = new();
     private static readonly StringBuilder AddSpacesStringBuilder = new();
 
     public static string AddSpaces(string text)
     {
+        var linkMatches = LinkRegex.Matches(text);
+
         InsertSpacePositions.Clear();
 
-        var match = LatinGroupRegex.Match(text);
-        if (!match.Success)
+        var latinMatches = LatinGroupRegex.Matches(text);
+        if (latinMatches.Count == 0)
             return "";
-        while (match.Success)
+
+        foreach (Match latinMatch in latinMatches)
         {
-            var begin = match.Index;
+            var begin = latinMatch.Index;
+            var next = latinMatch.Index + latinMatch.Length;
+
+            // Skip links
+            if (linkMatches.Any(m => begin >= m.Index && begin < m.Index + m.Length))
+                continue;
+
             if (begin > 0
-                && text[begin] is not ('*' or ']' or ')' or '}' or '>')
+                && text[begin] is not ('*' or ']' or ')' or '}' or '>' or '.')
                 && IsCjkCharacter(text[begin - 1]))
                 InsertSpacePositions.Add(begin);
 
-            var next = match.Index + match.Length;
             if (next <= text.Length - 1
-                && text[next - 1] is not ('*' or '[' or '(' or '{' or '<')
+                && text[next - 1] is not ('*' or '[' or '(' or '{' or '<' or '.')
                 && IsCjkCharacter(text[next]))
                 InsertSpacePositions.Add(next);
-
-            match = LatinGroupRegex.Match(text, next);
         }
 
         if (InsertSpacePositions.Count == 0)
