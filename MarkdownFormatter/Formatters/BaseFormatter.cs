@@ -18,10 +18,10 @@ public abstract class BaseFormatter
 
     protected static bool IsUnorderedList(string line)
     {
-        var trimmedLine = line.TrimStart();
-        return trimmedLine.StartsWith("- ")
-               || trimmedLine.StartsWith("* ")
-               || trimmedLine.StartsWith("+ ");
+        var trimmedLine = line.Trim();
+        return trimmedLine.StartsWith("- ") || trimmedLine == "-"
+               || trimmedLine.StartsWith("* ") || trimmedLine == "*"
+               || trimmedLine.StartsWith("+ ") || trimmedLine == "+";
     }
 
     private static readonly Regex OrderedListPrefixRegex = new(@"^\d+\. ");

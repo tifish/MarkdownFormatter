@@ -17,6 +17,7 @@ public static class MarkdownFormatter
             new UnifyListCharacter(),
             new OnlyOneSpaceAfterListCharacter(),
             new RemoveBlankLinesBetweenListItems(),
+            new SurroundListWithBlankLines(),
             new SurroundCodeBlockWithBlankLines(),
             new SurroundCodeWithOnlyOneBacktick(),
             new AddSpacesBetweenLatinAndCjk(),
