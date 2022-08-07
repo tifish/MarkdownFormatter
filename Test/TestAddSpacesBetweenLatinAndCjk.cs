@@ -5,10 +5,10 @@ namespace Test;
 [TestClass]
 public class TestAddSpacesBetweenLatinAndCjk
 {
-    void Test(string input, string output)
+    private void Test(string input, string output)
     {
         var formatter = new AddSpacesBetweenLatinAndCjk();
-        var lines = new List<string> { input, };
+        var lines = new List<string> { input };
         formatter.Format(lines, "");
         Assert.AreEqual(output, lines[0]);
     }
@@ -31,7 +31,7 @@ public class TestAddSpacesBetweenLatinAndCjk
         Test("（WASAPI）独占模式", "（WASAPI）独占模式");
 
         Test("WASAPI，独占模式", "WASAPI，独占模式");
-        Test("WASAPI,独占模式", "WASAPI, 独占模式");
+        Test("WASAPI,独占模式", "WASAPI,独占模式");
 
         Test("<http://WASAPI独占模式.com>", "<http://WASAPI独占模式.com>");
         Test("独占模式<http://WASAPI独占模式.com>独占模式", "独占模式 <http://WASAPI独占模式.com> 独占模式");
@@ -50,5 +50,10 @@ public class TestAddSpacesBetweenLatinAndCjk
         Test("**WASAPI**独占模式", "**WASAPI**独占模式");
 
         Test("WASAPI.独占模式", "WASAPI.独占模式");
+        Test("独占模式,WASAPI", "独占模式,WASAPI");
+        Test("独占模式;WASAPI", "独占模式;WASAPI");
+        Test("独占模式:WASAPI", "独占模式:WASAPI");
+        Test("独占模式!WASAPI", "独占模式!WASAPI");
+        Test("独占模式?WASAPI", "独占模式?WASAPI");
     }
 }

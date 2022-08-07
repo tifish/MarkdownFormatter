@@ -50,7 +50,7 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
     }
 
     private static readonly Regex LatinGroupRegex = new(
-        @"[!-/:-@\[-`\{-~]*[a-zA-Z\d]+[!-/:-@\[-`\{-~]*"
+        @"[([{'""<]*[a-zA-Z\d]+[)\]}'"">]*"
     );
 
     private static readonly Regex[] QuotedWithSpacesRegexList =
@@ -79,13 +79,10 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
     public static string AddSpaces(string text)
     {
         InsertSpacePositions.Clear();
+        var quotedMatches = QuotedRegexList.SelectMany(regex => regex.Matches(text)).ToList();
 
         // Add spaces for latins and number begin or end with punctuation
         var latinMatches = LatinGroupRegex.Matches(text);
-        if (latinMatches.Count == 0)
-            return "";
-
-        var quotedMatches = QuotedRegexList.SelectMany(regex => regex.Matches(text)).ToList();
 
         foreach (Match latinMatch in latinMatches)
         {
@@ -94,18 +91,14 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
             var end = next - 1;
 
             // Skip quoted text
-            if (quotedMatches.Any(m => m.Index <= begin && begin < m.Index + m.Length
-                                       || m.Index <= end && end < m.Index + m.Length))
+            if (quotedMatches.Any(m => (m.Index <= begin && begin < m.Index + m.Length)
+                                       || (m.Index <= end && end < m.Index + m.Length)))
                 continue;
 
-            if (begin > 0
-                && text[begin] is not (']' or ')' or '}' or '>' or '*' or '.' or '"')
-                && IsCjkCharacter(text[begin - 1]))
+            if (begin > 0 && IsCjkCharacter(text[begin - 1]))
                 InsertSpacePositions.Add(begin);
 
-            if (next <= text.Length - 1
-                && text[next - 1] is not ('[' or '(' or '{' or '<' or '*' or '.' or '"')
-                && IsCjkCharacter(text[next]))
+            if (next <= text.Length - 1 && IsCjkCharacter(text[next]))
                 InsertSpacePositions.Add(next);
         }
 
@@ -119,12 +112,10 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
             var next = quotedWithSpacesMatch.Index + quotedWithSpacesMatch.Length;
             var end = next - 1;
 
-            if (begin > 0
-                && (char.IsLetterOrDigit(text[begin - 1]) || IsCjkCharacter(text[begin - 1])))
+            if (begin > 0 && (char.IsLetterOrDigit(text[begin - 1]) || IsCjkCharacter(text[begin - 1])))
                 InsertSpacePositions.Add(begin);
 
-            if (next <= text.Length - 1
-                && (char.IsLetterOrDigit(text[next]) || IsCjkCharacter(text[next])))
+            if (next <= text.Length - 1 && (char.IsLetterOrDigit(text[next]) || IsCjkCharacter(text[next])))
                 InsertSpacePositions.Add(next);
         }
 
