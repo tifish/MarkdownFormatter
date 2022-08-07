@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MarkdownFormatter;
+﻿namespace MarkdownFormatter.Formatters;
 
 public class UnifyListCharacter : BaseFormatter
 {
@@ -11,7 +9,7 @@ public class UnifyListCharacter : BaseFormatter
             var line = lines[i];
             if (IsCodeBlock(line))
                 continue;
-            
+
             var trimmedLine = line.TrimStart();
             if (trimmedLine.StartsWith("* ")
                 || trimmedLine.StartsWith("+ "))

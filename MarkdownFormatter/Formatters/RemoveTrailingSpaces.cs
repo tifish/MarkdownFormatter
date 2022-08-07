@@ -1,4 +1,4 @@
-﻿namespace MarkdownFormatter;
+﻿namespace MarkdownFormatter.Formatters;
 
 public class RemoveTrailingSpaces : BaseFormatter
 {

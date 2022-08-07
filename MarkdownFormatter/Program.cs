@@ -1,8 +1,6 @@
-﻿using System.Globalization;
+﻿namespace MarkdownFormatter;
 
-namespace MarkdownFormatter;
-
-class Program
+static class Program
 {
     private static void Main(string[] args)
     {

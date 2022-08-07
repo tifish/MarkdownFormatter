@@ -1,4 +1,4 @@
-﻿namespace MarkdownFormatter;
+﻿namespace MarkdownFormatter.Formatters;
 
 public class SurroundHeadingsWithBlankLines : BaseFormatter
 {
@@ -9,7 +9,7 @@ public class SurroundHeadingsWithBlankLines : BaseFormatter
             var line = lines[i];
             if (IsCodeBlock(line))
                 continue;
-            
+
             if (!IsHeading(line))
                 continue;
 

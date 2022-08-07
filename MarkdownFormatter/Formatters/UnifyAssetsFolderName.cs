@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace MarkdownFormatter;
+namespace MarkdownFormatter.Formatters;
 
 public class UnifyAssetsFolderName : BaseFormatter
 {

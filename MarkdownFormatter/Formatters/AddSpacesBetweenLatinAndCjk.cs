@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MarkdownFormatter;
+namespace MarkdownFormatter.Formatters;
 
 public class AddSpacesBetweenLatinAndCjk : BaseFormatter
 {

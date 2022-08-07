@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MarkdownFormatter;
+﻿namespace MarkdownFormatter.Formatters;
 
 public class OnlyOneSpaceAfterListCharacter : BaseFormatter
 {
@@ -20,9 +18,7 @@ public class OnlyOneSpaceAfterListCharacter : BaseFormatter
             var extraSpaceStartIndex = startIndex + 2;
             var extraSpaceEndIndex = extraSpaceStartIndex;
             while (extraSpaceEndIndex < line.Length && line[extraSpaceEndIndex] == ' ')
-            {
                 extraSpaceEndIndex++;
-            }
 
             if (extraSpaceStartIndex == extraSpaceEndIndex)
                 continue;

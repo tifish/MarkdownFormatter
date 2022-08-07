@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace MarkdownFormatter;
+namespace MarkdownFormatter.Formatters;
 
 public abstract class BaseFormatter
 {
@@ -11,12 +11,12 @@ public abstract class BaseFormatter
         _inCodeBlock = false;
     }
 
-    protected bool IsList(string line)
+    protected static bool IsList(string line)
     {
         return IsUnorderedList(line) || IsOrderedList(line);
     }
 
-    protected bool IsUnorderedList(string line)
+    protected static bool IsUnorderedList(string line)
     {
         var trimmedLine = line.TrimStart();
         return trimmedLine.StartsWith("- ")
@@ -26,7 +26,7 @@ public abstract class BaseFormatter
 
     private static readonly Regex OrderedListPrefixRegex = new(@"^\d+\. ");
 
-    protected bool IsOrderedList(string line)
+    protected static bool IsOrderedList(string line)
     {
         var trimmedLine = line.TrimStart();
         return OrderedListPrefixRegex.IsMatch(trimmedLine);
@@ -34,12 +34,12 @@ public abstract class BaseFormatter
 
     private static readonly Regex HeadingPrefixRegex = new(@"^#+ ");
 
-    protected bool IsHeading(string line)
+    protected static bool IsHeading(string line)
     {
         return HeadingPrefixRegex.IsMatch(line);
     }
 
-    protected bool IsCodeBlockBegin(string line)
+    protected static bool IsCodeBlockBegin(string line)
     {
         var trimmedLine = line.Trim();
         return trimmedLine.StartsWith("```")
@@ -47,7 +47,7 @@ public abstract class BaseFormatter
                && trimmedLine.IndexOf("```", 3, StringComparison.Ordinal) == -1;
     }
 
-    protected bool IsCodeBlockEnd(string line)
+    protected static bool IsCodeBlockEnd(string line)
     {
         return line.Trim() == "```";
     }

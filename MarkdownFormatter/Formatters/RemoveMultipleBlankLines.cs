@@ -1,4 +1,4 @@
-﻿namespace MarkdownFormatter;
+﻿namespace MarkdownFormatter.Formatters;
 
 public class RemoveMultipleBlankLines : BaseFormatter
 {
@@ -12,8 +12,8 @@ public class RemoveMultipleBlankLines : BaseFormatter
             {
                 isPrevLineBlank = false;
                 continue;
-            }   
-            
+            }
+
             var trimmedLine = line.Trim();
             if (trimmedLine == "")
             {

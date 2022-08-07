@@ -1,4 +1,4 @@
-using MarkdownFormatter;
+using MarkdownFormatter.Formatters;
 
 namespace Test;
 
