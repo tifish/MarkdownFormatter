@@ -16,11 +16,6 @@ public class TestAddSpacesBetweenLatinAndCjk
     [TestMethod]
     public void TestCharactersAndPunctuations()
     {
-        // CJK character
-        // CJK punctuation
-        // latin character
-        // latin punctuation
-
         Test("WASAPI独占模式", @"WASAPI 独占模式");
         Test("独占模式WASAPI独占模式", @"独占模式 WASAPI 独占模式");
         Test("WASAPI独占模式WASAPI", @"WASAPI 独占模式 WASAPI");
@@ -55,5 +50,9 @@ public class TestAddSpacesBetweenLatinAndCjk
         Test("独占模式:WASAPI", "独占模式:WASAPI");
         Test("独占模式!WASAPI", "独占模式!WASAPI");
         Test("独占模式?WASAPI", "独占模式?WASAPI");
+
+        Test("独占模式7.2% WASAPI", "独占模式 7.2% WASAPI");
+        Test("独占模式$7 WASAPI", "独占模式 $7 WASAPI");
+        Test("独占模式3-7% WASAPI", "独占模式 3-7% WASAPI");
     }
 }

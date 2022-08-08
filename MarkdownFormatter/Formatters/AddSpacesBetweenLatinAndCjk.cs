@@ -53,6 +53,12 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
         @"[([{'""<]*[a-zA-Z\d]+[)\]}'"">]*"
     );
 
+    private static readonly Regex[] WithSpacesRegexList =
+    {
+        new(@"\$-?\d+(\.\d+)?"),
+        new(@"-?\d+(\.\d+)?%"),
+    };
+
     private static readonly Regex[] QuotedWithSpacesRegexList =
     {
         new(@"<\w+://[^>]*>"),
@@ -73,12 +79,9 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
         new(@"【[^】]*】"),
     };
 
-    private static readonly List<int> InsertSpacePositions = new();
-    private static readonly StringBuilder AddSpacesStringBuilder = new();
-
     public static string AddSpaces(string text)
     {
-        InsertSpacePositions.Clear();
+        var insertSpacePositions = new List<int>();
         var quotedMatches = QuotedRegexList.SelectMany(regex => regex.Matches(text)).ToList();
 
         // Add spaces for latins and number begin or end with punctuation
@@ -96,10 +99,32 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
                 continue;
 
             if (begin > 0 && IsCjkCharacter(text[begin - 1]))
-                InsertSpacePositions.Add(begin);
+                insertSpacePositions.Add(begin);
 
             if (next <= text.Length - 1 && IsCjkCharacter(text[next]))
-                InsertSpacePositions.Add(next);
+                insertSpacePositions.Add(next);
+        }
+
+        // Add spaces for 7% and $7
+        var withSpacesMatches = WithSpacesRegexList.SelectMany(
+            regex => regex.Matches(text)).ToList();
+
+        foreach (var withSpacesMatch in withSpacesMatches)
+        {
+            var begin = withSpacesMatch.Index;
+            var next = withSpacesMatch.Index + withSpacesMatch.Length;
+            var end = next - 1;
+
+            // Skip quoted text
+            if (quotedMatches.Any(m => (m.Index <= begin && begin < m.Index + m.Length)
+                                       || (m.Index <= end && end < m.Index + m.Length)))
+                continue;
+
+            if (begin > 0 && IsCjkCharacter(text[begin - 1]))
+                insertSpacePositions.Add(begin);
+
+            if (next <= text.Length - 1 && IsCjkCharacter(text[next]))
+                insertSpacePositions.Add(next);
         }
 
         // Add spaces for `xxx` and <http://xxx>
@@ -110,32 +135,32 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
         {
             var begin = quotedWithSpacesMatch.Index;
             var next = quotedWithSpacesMatch.Index + quotedWithSpacesMatch.Length;
-            var end = next - 1;
 
             if (begin > 0 && (char.IsLetterOrDigit(text[begin - 1]) || IsCjkCharacter(text[begin - 1])))
-                InsertSpacePositions.Add(begin);
+                insertSpacePositions.Add(begin);
 
             if (next <= text.Length - 1 && (char.IsLetterOrDigit(text[next]) || IsCjkCharacter(text[next])))
-                InsertSpacePositions.Add(next);
+                insertSpacePositions.Add(next);
         }
 
         // Insert spaces
-        if (InsertSpacePositions.Count == 0)
+        if (insertSpacePositions.Count == 0)
             return "";
 
-        InsertSpacePositions.Sort();
+        insertSpacePositions.Sort();
+        insertSpacePositions = insertSpacePositions.Distinct().ToList();
 
-        AddSpacesStringBuilder.Clear();
+        var resultStringBuilder = new StringBuilder();
         var startIndex = 0;
-        foreach (var position in InsertSpacePositions)
+        foreach (var position in insertSpacePositions)
         {
-            AddSpacesStringBuilder.Append(text.AsSpan(startIndex, position - startIndex));
-            AddSpacesStringBuilder.Append(' ');
+            resultStringBuilder.Append(text.AsSpan(startIndex, position - startIndex));
+            resultStringBuilder.Append(' ');
             startIndex = position;
         }
 
-        AddSpacesStringBuilder.Append(text.AsSpan(startIndex));
+        resultStringBuilder.Append(text.AsSpan(startIndex));
 
-        return AddSpacesStringBuilder.ToString();
+        return resultStringBuilder.ToString();
     }
 }
