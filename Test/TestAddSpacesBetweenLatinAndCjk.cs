@@ -54,5 +54,17 @@ public class TestAddSpacesBetweenLatinAndCjk
         Test("独占模式7.2% WASAPI", "独占模式 7.2% WASAPI");
         Test("独占模式$7 WASAPI", "独占模式 $7 WASAPI");
         Test("独占模式3-7% WASAPI", "独占模式 3-7% WASAPI");
+
+        Test("a+2", "a+2");
+        Test("a-2", "a-2");
+        Test("ax2", "ax2");
+        Test("a/2", "a/2");
+        Test("重量<180g", "重量<180g");
+        Test("重量>180g", "重量>180g");
+        Test("重量<=180g", "重量<=180g");
+        Test("重量>=180g", "重量>=180g");
+
+        Test("使用C#语言", "使用 C# 语言");
+        Test("使用c++语言", "使用 c++ 语言");
     }
 }

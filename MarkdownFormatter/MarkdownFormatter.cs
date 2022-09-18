@@ -13,6 +13,7 @@ public static class MarkdownFormatter
             new EndWithSingleNewLine(),
             new RemoveTrailingSpaces(),
             new RemoveMultipleBlankLines(),
+
             new SurroundHeadingsWithBlankLines(),
             new UnifyListCharacter(),
             new OnlyOneSpaceAfterListCharacter(),
@@ -20,8 +21,10 @@ public static class MarkdownFormatter
             new SurroundListWithBlankLines(),
             new SurroundCodeBlockWithBlankLines(),
             new SurroundCodeWithOnlyOneBacktick(),
-            new AddSpacesBetweenLatinAndCjk(),
+
             new UnifyAssetsFolderName(),
+
+            new AddSpacesBetweenLatinAndCjk(),
         };
     }
 

@@ -50,34 +50,41 @@ public class AddSpacesBetweenLatinAndCjk : BaseFormatter
     }
 
     private static readonly Regex LatinGroupRegex = new(
-        @"[([{'""<]*[a-zA-Z\d]+[)\]}'"">]*"
+        // <xxx>, (xxx), [xxx], {xxx}, 'xxx', "xxx", xxx
+        // \w+ contains more than latin characters, use [a-zA-Z\d_] instead.
+        @"<[a-zA-Z\d_]+>"
+        + @"|\([a-zA-Z\d_]+\)"
+        + @"|\[[a-zA-Z\d_]+\]"
+        + @"|\{[a-zA-Z\d_]+\}"
+        + @"|'[a-zA-Z\d_]+'|"
+        + @"""[a-zA-Z\d_]+"""
+        + @"|[Cc]#"
+        + @"|[Cc]\+\+"
+        + @"|[a-zA-Z\d_]+"
     );
 
     private static readonly Regex[] WithSpacesRegexList =
     {
-        new(@"\$-?\d+(\.\d+)?"),
-        new(@"-?\d+(\.\d+)?%"),
+        new(@"\$-?\d+(\.\d+)?"), // money
+        new(@"-?\d+(\.\d+)?%"), // percentage
     };
 
     private static readonly Regex[] QuotedWithSpacesRegexList =
     {
-        new(@"<\w+://[^>]*>"),
-        new(@"`[^`]*`"),
+        new(@"<[a-zA-Z\d]+://[^>]*>"), // <http://xxx>
+        new(@"`[^`]*`"), // `File.Open()`
     };
 
-    private static readonly Regex[] QuotedRegexList =
+    private static readonly Regex[] QuotedRegexList = QuotedWithSpacesRegexList.Concat(new Regex[]
     {
-        new(@"<\w+://[^>]*>"),
-        new(@"`[^`]*`"),
-        new(@"\[[^]]*\]\([^)]*\)"),
-        // new(@"\*\*\*[^*]\*\*\*`"),
-        // new(@"\*\*[^*]\*\*`"),
-        // new(@"\*[^*]\*`"),
+        new(@"\[[^]]*\]\([^)]*\)"), // [title](http://xxx)
+        new(@"'[^']*'"),
         new(@"""[^""]*"""),
         new(@"“[^”]*”"),
         new(@"《[^》]*》"),
         new(@"【[^】]*】"),
-    };
+        // <xxx>, (xxx), [xxx], {xxx} can be nested, so ignore them here.
+    }).ToArray();
 
     public static string AddSpaces(string text)
     {
