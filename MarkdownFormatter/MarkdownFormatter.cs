@@ -10,7 +10,6 @@ public static class MarkdownFormatter
         Formatters = new List<BaseFormatter>
         {
             new FirstLineShouldBeNotBlank(),
-            new EndWithSingleNewLine(),
             new RemoveTrailingSpaces(),
             new RemoveMultipleBlankLines(),
 
@@ -25,6 +24,8 @@ public static class MarkdownFormatter
             new UnifyAssetsFolderName(),
 
             new AddSpacesBetweenLatinAndCjk(),
+
+            // new EndWithSingleNewLine(),
         };
     }
 
@@ -34,9 +35,44 @@ public static class MarkdownFormatter
     {
         FormatFileName(ref markdownFile);
 
-        var lines = File.ReadAllLines(markdownFile).ToList();
+        bool hasEndOfFileReturn;
+        var lines = new List<string>();
+
+        using (var stream = new FileStream(markdownFile, FileMode.Open))
+        {
+            if (stream.Length == 0)
+                return;
+
+            stream.Seek(-1, SeekOrigin.End);
+            var lastByte = stream.ReadByte();
+            hasEndOfFileReturn = lastByte == '\n';
+            stream.Seek(0, SeekOrigin.Begin);
+            using var reader = new StreamReader(stream);
+
+            var line = reader.ReadLine();
+            while (line != null)
+            {
+                lines.Add(line);
+                line = reader.ReadLine();
+            }
+        }
+
+        if (lines.Count == 0)
+            return;
+
         Format(lines, markdownFile);
-        File.WriteAllLines(markdownFile, lines, new UTF8Encoding(true));
+
+        using (var writer = new StreamWriter(markdownFile, new UTF8Encoding(true),
+                   new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Write }))
+        {
+            for (var i = 0; i < lines.Count - 1; i++)
+                writer.WriteLine(lines[i]);
+
+            if (hasEndOfFileReturn || EndWithSingleNewLine.Processed)
+                writer.WriteLine(lines[^1]);
+            else
+                writer.Write(lines[^1]);
+        }
     }
 
     private static void FormatFileName(ref string markdownFile)
