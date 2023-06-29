@@ -4,7 +4,7 @@ namespace MarkdownFormatter.Formatters;
 
 public class UnifyAssetsFolderName : BaseFormatter
 {
-    private static readonly Regex ImageRegex = new(@"!\[([^\]]+)\]\((([^\\/]+)\.assets/([^\)]+))\)");
+    private static readonly Regex ImageRegex = new(@"!" + @"\[([^\]]+)\]" + @"\((([^\\/]+)\.assets/([^\)]+))\)");
 
     public override void Format(List<string> lines, string filePath)
     {
@@ -26,15 +26,16 @@ public class UnifyAssetsFolderName : BaseFormatter
                 if (File.Exists(fullAssetPath))
                 {
                     var assetsFolderBaseName = match.Groups[3].Value.Replace("%20", " ");
+
                     if (assetsFolderBaseName != fileNameNoExt)
                     {
                         var wrongAssetsFolder = Path.Combine(parentFolder, assetsFolderBaseName + ".assets");
                         var rightAssetsFolder = Path.ChangeExtension(filePath, ".assets");
-                        Directory.Move(wrongAssetsFolder, rightAssetsFolder);
+                        MoveDirectory(wrongAssetsFolder, rightAssetsFolder);
 
                         var imageReplaceRegex = new Regex($@"(!\[[^\]]+\]\(){Regex.Escape(match.Groups[3].Value)}(\.assets/[^\)]+\))");
                         for (var lineNum = 0; lineNum < lines.Count; lineNum++)
-                            lines[lineNum] = imageReplaceRegex.Replace(lines[lineNum], $@"$1{fileNameNoExt}$2");
+                            lines[lineNum] = imageReplaceRegex.Replace(lines[lineNum], $"${{1}}{fileNameNoExt}$2");
 
                         goto RETRY;
                     }
@@ -47,5 +48,28 @@ public class UnifyAssetsFolderName : BaseFormatter
                 match = ImageRegex.Match(line, match.Index + match.Length);
             }
         }
+    }
+
+    private static void MoveDirectory(string sourceDirectory, string targetDirectory)
+    {
+        if (!Directory.Exists(targetDirectory))
+        {
+            Directory.Move(sourceDirectory,targetDirectory);
+            return;
+        }
+
+        foreach (var sourcePath in Directory.EnumerateFiles(sourceDirectory))
+        {
+            var relativePath = Path.GetRelativePath(sourceDirectory, sourcePath);
+            var targetPath = Path.Combine(targetDirectory, relativePath);
+
+            var targetDir = Path.GetDirectoryName(targetPath)!;
+            if (!Directory.Exists(targetDir))
+                Directory.CreateDirectory(targetDir);
+
+            File.Move(sourcePath, targetPath, true);
+        }
+
+        Directory.Delete(sourceDirectory, true);
     }
 }
