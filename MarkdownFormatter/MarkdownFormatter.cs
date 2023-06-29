@@ -63,7 +63,7 @@ public static class MarkdownFormatter
         Format(lines, markdownFile);
 
         using (var writer = new StreamWriter(markdownFile, new UTF8Encoding(true),
-                   new FileStreamOptions { Mode = FileMode.Open, Access = FileAccess.Write }))
+                   new FileStreamOptions { Mode = FileMode.Create, Access = FileAccess.Write }))
         {
             for (var i = 0; i < lines.Count - 1; i++)
                 writer.WriteLine(lines[i]);
